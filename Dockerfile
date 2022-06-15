@@ -5,6 +5,7 @@ RUN apt update
 RUN apt-get -y install \
 	nano \
 	mysql-server \
+	apache2 \
 	curl \
 	git
 
@@ -18,7 +19,6 @@ RUN sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/
 RUN service mysql start && \
 	mysql -u root --execute "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION; CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE SCHEMA xcms" && \
 	service mysql stop
-
 
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 
@@ -42,9 +42,13 @@ WORKDIR /home/wing-cms
 RUN npm install
 
 WORKDIR /home
-RUN printf "/etc/init.d/mysql start\nnode /home/wing-cms-api/japi.js &\nnode /home/wing-cms/xcms.js" > start.sh && \
+RUN mkdir /var/www/html/cdn && \
+	ln -s /var/www/html/cdn cdn
+
+
+RUN printf "/etc/init.d/mysql start\n/etc/init.d/apache2 start\nnode /home/wing-cms-api/japi.js &\nnode /home/wing-cms/xcms.js" > start.sh && \
 	chmod +x start.sh
 
-EXPOSE 3306 3002 4000
+EXPOSE 3306 80 3002 4000
 
 CMD ["/bin/sh", "start.sh"]
