@@ -30,25 +30,25 @@ RUN echo "NPM Version:" && npm --version
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
+RUN cd /home && \
+	git clone https://github.com/pb-it/wing-cms-api
+RUN cd /home/wing-cms-api && \
+	npm install --legacy-peer-deps
+
+# break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
 RUN cd /home && \
-	git clone https://github.com/pb-it/wing-cms-api && \
 	git clone https://github.com/pb-it/wing-cms
+RUN cd /home/wing-cms && \
+	npm install
 
-WORKDIR /home/wing-cms-api
-RUN npm install --legacy-peer-deps
-
-WORKDIR /home/wing-cms
-RUN npm install
+RUN mkdir /var/www/html/cdn && \
+	ln -s /var/www/html/cdn /home/cdn
 
 WORKDIR /home
-RUN mkdir /var/www/html/cdn && \
-	ln -s /var/www/html/cdn cdn
-
-
-RUN printf "/etc/init.d/mysql start\n/etc/init.d/apache2 start\nnode /home/wing-cms-api/japi.js &\nnode /home/wing-cms/xcms.js" > start.sh && \
+RUN printf "/etc/init.d/mysql start\n/etc/init.d/apache2 start\nnode /home/wing-cms-api/server.js &\nnode /home/wing-cms/server.js &\ntail -f /dev/null" > start.sh && \
 	chmod +x start.sh
 
-EXPOSE 3306 80 3002 4000
+EXPOSE 80 3002 3306 4000
 
 CMD ["/bin/sh", "start.sh"]
