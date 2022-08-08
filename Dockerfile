@@ -39,12 +39,12 @@ RUN apt-get -y install \
 RUN echo "NODE Version:" && node --version
 RUN echo "NPM Version:" && npm --version
 
-
+ARG GIT_TAG
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
 RUN cd /home && \
-	git clone https://github.com/pb-it/wing-cms-api && \
+	if [ -z "$GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms-api ; else git clone https://github.com/pb-it/wing-cms-api -b "$GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms-api && \
 	cp config/server-config-template.js config/server-config.js && \
 	cp config/database-config-template-docker.js config/database-config.js && \
@@ -53,7 +53,7 @@ RUN cd /home && \
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
 RUN cd /home && \
-	git clone https://github.com/pb-it/wing-cms && \
+	if [ -z "$GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms ; else git clone https://github.com/pb-it/wing-cms -b "$GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms && \
 	cp config/server-config-template.js config/server-config.js && \
 	npm install
@@ -64,9 +64,11 @@ RUN mkdir /var/www/html/cdn && \
 
 
 WORKDIR /home
-RUN printf "service ssh start\n/etc/init.d/vsftpd start\n/etc/init.d/mysql start\n/etc/init.d/apache2 start\nnode /home/wing-cms-api/server.js &\nnode /home/wing-cms/server.js &\ntail -f /dev/null" > start.sh && \
-	chmod +x start.sh
+
+ADD start.sh ./start.sh
+RUN chmod +x start.sh
 
 EXPOSE 20-22 80 3002 3306 4000
 
-CMD ["/bin/sh", "start.sh"]
+CMD bash /home/start.sh && tail -f /dev/null
+#ENTRYPOINT tail -f /dev/null

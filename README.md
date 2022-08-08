@@ -13,6 +13,12 @@ or pull prebuild from Docker Hub
 docker pull patrickbauerit/wing-cms-mysql:latest
 ```
 
+### Specific version (build script compatible with git tags >= 0.1.1-beta)
+
+```bash
+docker build . -t \<image-name\> --progress=plain --build-arg GIT_TAG=<tag>
+```
+
 
 ## Run
 
