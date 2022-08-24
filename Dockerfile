@@ -26,25 +26,28 @@ RUN usermod -d /var/lib/mysql/ mysql
 RUN sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
 
 RUN service mysql start && \
-	mysql -u root --execute "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION; CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE SCHEMA xcms" && \
+	mysql -u root --execute "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION; CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE SCHEMA cms" && \
 	service mysql stop
 
 
 
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-
+ARG NODE_VERSION
+RUN if [ -z "$NODE_VERSION" ] ; then curl -fsSL https://deb.nodesource.com/setup_18.x | bash - ; else curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - ; fi
 RUN apt-get -y install \
     nodejs
-
 RUN echo "NODE Version:" && node --version
 RUN echo "NPM Version:" && npm --version
 
-ARG GIT_TAG
+
+
+ARG CMS_GIT_TAG
+ARG API_GIT_TAG
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
 RUN cd /home && \
-	if [ -z "$GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms-api ; else git clone https://github.com/pb-it/wing-cms-api -b "$GIT_TAG" --depth 1 ; fi && \
+	if [ -z "$API_GIT_TAG" ] ; then API_GIT_TAG="$CMS_GIT_TAG" ; fi && \
+	if [ -z "$API_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms-api ; else git clone https://github.com/pb-it/wing-cms-api -b "$API_GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms-api && \
 	cp config/server-config-template.js config/server-config.js && \
 	cp config/database-config-template-docker.js config/database-config.js && \
@@ -53,7 +56,7 @@ RUN cd /home && \
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
 RUN cd /home && \
-	if [ -z "$GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms ; else git clone https://github.com/pb-it/wing-cms -b "$GIT_TAG" --depth 1 ; fi && \
+	if [ -z "$CMS_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms ; else git clone https://github.com/pb-it/wing-cms -b "$CMS_GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms && \
 	cp config/server-config-template.js config/server-config.js && \
 	npm install

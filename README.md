@@ -1,20 +1,26 @@
 # wing-cms-mysql
 
-⚠️**WARNING**⚠️
+All-In-One solution with mysql database, server(backend API) and client(browser) application.
 
-The generated images are for testing puposes only and should not be used in productive way or in public domains!
+> ⚠️**WARNING**⚠️
+>
+> The generated images are for testing puposes only and should not be used in productive way or in public domains!
+
 
 ## Build
 
 ```bash
 docker build . -t <image-name> --progress=plain
+# '--build-arg NODE_VERSION=<version>' - '18'(default), '16' , ...
 ```
 
 > Specific version (build script compatible with git tags >= 0.1.1-beta)
 >
 > ```bash
-> docker build . -t <image-name> --progress=plain --build-arg GIT_TAG=<tag>
+> docker build . -t <image-name> --progress=plain --build-arg CMS_GIT_TAG=<tag>
+> # also append '--build-arg API_GIT_TAG=<tag>' if versions don't match
 > ```
+
 
 ### As an alternative prebuild images can be pulled from Docker Hub
 
@@ -49,4 +55,11 @@ docker run --name <container-name> \
 	-p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
 	--mount type=bind,source=<host-path>,target=/var/www/html/cdn \
 	-it <image-name-or-id> /bin/bash
+```
+
+
+### Test
+
+```bash
+docker run -e TEST=true -p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 -d \<image-name-or-id\>
 ```
