@@ -4,7 +4,7 @@ All-In-One solution with mysql database, server(backend API) and client(browser)
 
 > ⚠️**WARNING**⚠️
 >
-> The generated images are for testing puposes only and should not be used in productive way or in public domains!
+> The generated images are for testing purposes only and should not be used in productive way or in public domains!
 
 
 ## Build
@@ -45,7 +45,9 @@ docker exec -it <container-name-or-id> bash
 or start interactive with bash
 
 ```bash
-docker run -p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 -it <image-name-or-id> /bin/bash
+docker run --name <container-name> \
+	-p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
+	-it <image-name-or-id> /bin/bash
 ```
 
 When using the internal CDN you can access the files with SCP, FTP or you can start the container with a mounting:
@@ -58,8 +60,21 @@ docker run --name <container-name> \
 ```
 
 
+### MACVLAN
+
+```bash
+docker run --name <container-name> \
+	--env MACVLAN=true \
+	-p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
+	-d \<image-name-or-id\>
+```
+
+
 ### Test
 
 ```bash
-docker run -e TEST=true -p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 -d \<image-name-or-id\>
+docker run --name <container-name> \
+	--env TEST=true \
+	-p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
+	-d \<image-name-or-id\>
 ```

@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 RUN apt-get update && \
 	apt-get install -y \
+	dos2unix \
 	openssh-server \
 	vsftpd \
 	nano \
@@ -49,8 +50,6 @@ RUN cd /home && \
 	if [ -z "$API_GIT_TAG" ] ; then API_GIT_TAG="$CMS_GIT_TAG" ; fi && \
 	if [ -z "$API_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms-api ; else git clone https://github.com/pb-it/wing-cms-api -b "$API_GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms-api && \
-	cp config/server-config-template.js config/server-config.js && \
-	cp config/database-config-template-docker.js config/database-config.js && \
 	npm install --legacy-peer-deps
 
 # break docker build cache on git update
@@ -58,7 +57,6 @@ ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_comm
 RUN cd /home && \
 	if [ -z "$CMS_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms ; else git clone https://github.com/pb-it/wing-cms -b "$CMS_GIT_TAG" --depth 1 ; fi && \
 	cd /home/wing-cms && \
-	cp config/server-config-template.js config/server-config.js && \
 	npm install
 
 RUN mkdir /var/www/html/cdn && \
@@ -69,7 +67,7 @@ RUN mkdir /var/www/html/cdn && \
 WORKDIR /home
 
 ADD start.sh ./start.sh
-RUN chmod +x start.sh
+RUN dos2unix start.sh && chmod +x start.sh
 
 EXPOSE 20-22 80 3002 3306 4000
 
