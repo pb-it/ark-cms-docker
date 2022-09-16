@@ -1,7 +1,10 @@
 #!/bin/bash
 
+#apt update
+#apt upgrade -y
+
 service ssh start
-/etc/init.d/vsftpd start
+if [ -f "/etc/init.d/vsftpd" ]; then /etc/init.d/vsftpd start ; fi
 /etc/init.d/mysql start
 /etc/init.d/apache2 start
 
@@ -13,11 +16,15 @@ if [ ! -f "/home/wing-cms-api/server-config.js" ]; then
 	else
 		cp config/database-config-template-docker.js config/database-config.js
 	fi
-fi
+	cat <<EOF > config/cdn-config.js
+var cdn = [{
+    name: "localhost",
+    url: "/cdn",
+    path: "/var/www/html/cdn/"
+}];
 
-if [ ! -f "/home/wing-cms/server-config.js" ]; then
-	cd /home/wing-cms
-	cp config/server-config-template.js config/server-config.js
+module.exports = cdn;
+EOF
 fi
 
 echo $TEST

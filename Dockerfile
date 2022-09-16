@@ -3,19 +3,14 @@ FROM ubuntu:22.04
 RUN apt-get update && \
 	apt-get install -y \
 	dos2unix \
-	openssh-server \
-	vsftpd \
-	nano \
 	curl \
 	git \
 	mysql-server \
 	apache2
 
-RUN echo 'root:docker' | chpasswd
-
-RUN sed -i 's/\(#\|\)PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-#RUN mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
+ARG ENV
+RUN if [ "$ENV" = "development" ] ; then apt-get install -y nano openssh-server cifs-utils vsftpd subversion ; echo 'root:docker' | chpasswd ; sed -i 's/\(#\|\)PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config ; fi
+#mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
 
 
 
@@ -59,8 +54,7 @@ RUN cd /home && \
 	cd /home/wing-cms && \
 	npm install
 
-RUN mkdir /var/www/html/cdn && \
-	ln -s /var/www/html/cdn /home/cdn
+RUN mkdir /var/www/html/cdn #ln -s /var/www/html/cdn /home/cdn
 
 
 
