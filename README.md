@@ -52,6 +52,17 @@ docker run --name <container-name> \
 	-it <image-name-or-id> /bin/bash
 ```
 
+You can persist the database in an seperate mount like this:
+
+```bash
+sudo docker volume create mysql
+
+docker run --name <container-name> \
+	-p 20-22:20-22 -p 80:80 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
+	-v mysql:/var/lib/mysql \
+	-it <image-name-or-id> /bin/bash
+```
+
 When using the internal CDN you can access the files with SCP, FTP or you can start the container with a mounting:
 
 ```bash
