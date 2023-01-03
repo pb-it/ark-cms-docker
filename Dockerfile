@@ -47,6 +47,11 @@ RUN cd /home && \
 	cd /home/wing-cms-api && \
 	npm install --legacy-peer-deps
 
+RUN mkdir /home/wing-cms-api/config/sslcert && cd /home/wing-cms-api/config/sslcert && \
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+    -keyout key.pem -out cert.pem -subj "/CN=example.com" \
+    -addext "subjectAltName=DNS:example.com,DNS:www.example.net,IP:10.0.0.1"
+
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
 RUN cd /home && \
