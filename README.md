@@ -27,7 +27,7 @@ docker build . -t <image-name> --progress=plain
 ```bash
 docker pull patrickbauerit/wing-cms-mysql:<tag>
 ```
-See [https://hub.docker.com/repository/docker/patrickbauerit/wing-cms-mysql](https://hub.docker.com/repository/docker/patrickbauerit/wing-cms-mysql) for available tags
+See [https://hub.docker.com/r/patrickbauerit/wing-cms-mysql](https://hub.docker.com/r/patrickbauerit/wing-cms-mysql) for available tags
 	
 
 ## Run
@@ -52,7 +52,7 @@ docker run --name <container-name> \
 	-it <image-name-or-id> /bin/bash
 ```
 
-You can persist the database in an seperate mount like this:
+You can persist the database in a seperate mount like this:
 
 ```bash
 sudo docker volume create mysql
