@@ -1,74 +1,85 @@
 FROM ubuntu:22.04
 
+ARG BUILD_ENV="production"
+ARG CMS_GIT_TAG
+ARG API_GIT_TAG
+
 RUN apt-get update && \
 	apt-get install -y \
 	dos2unix \
 	curl \
 	git \
 	mysql-server \
-	apache2
+	nginx
 
-ARG ENV
-RUN if [ "$ENV" = "development" ] ; then apt-get install -y nano openssh-server cifs-utils vsftpd subversion ; echo 'root:docker' | chpasswd ; sed -i 's/\(#\|\)PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config ; fi
-#mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
+RUN echo "$BUILD_ENV"
+RUN if [ "$BUILD_ENV" = "development" ] ; then \
+		apt-get install -y \
+			nano \
+			openssh-server \
+			cifs-utils \
+			vsftpd \
+			subversion ; \
+		echo 'root:docker' | chpasswd ; \
+		sed -i 's/\(#\|\)PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config ; \
+		#mv /etc/vsftpd.conf /etc/vsftpd.conf.orig ; \
+	fi
+
+WORKDIR /home
+COPY sslcert sslcert
+RUN rm -f sslcert/.gitignore && \
+	if [ -z "$(ls -A sslcert)" ] ; then \
+    	openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+    	-keyout sslcert/key.pem -out sslcert/cert.pem -subj "/CN=example.com" \
+    	-addext "subjectAltName=DNS:example.com,DNS:www.example.net,IP:10.0.0.1" ; \
+	fi
+
+COPY scripts scripts
+RUN dos2unix scripts/setup_mysql.sh && chmod +x scripts/setup_mysql.sh
+RUN dos2unix scripts/setup_api.sh && chmod +x scripts/setup_api.sh
+RUN dos2unix scripts/setup_cms.sh && chmod +x scripts/setup_cms.sh
+RUN dos2unix scripts/start.sh && chmod +x scripts/start.sh
 
 
-
-#su: warning: cannot change directory to /nonexistent: No such file or directory
-#https://stackoverflow.com/questions/62987154/mysql-wont-start-error-su-warning-cannot-change-directory-to-nonexistent
-# alternative may be https://ivangogogo.medium.com/docker-use-dockerfile-to-install-mysql-5-7-on-ubuntu-18-04-88e36436f1fd
-RUN usermod -d /var/lib/mysql/ mysql
-
-RUN sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
-
-RUN service mysql start && \
-	mysql -u root --execute "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION; CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY ''; GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE SCHEMA cms" && \
-	service mysql stop
-
+RUN scripts/setup_mysql.sh
 
 
 ARG NODE_VERSION
-RUN if [ -z "$NODE_VERSION" ] ; then curl -fsSL https://deb.nodesource.com/setup_18.x | bash - ; else curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - ; fi
+RUN if [ -z "$NODE_VERSION" ] ; then \
+		curl -fsSL https://deb.nodesource.com/setup_18.x | bash - ; \
+	else \
+		curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - ; \
+	fi
 RUN apt-get -y install \
     nodejs
-RUN echo "NODE Version:" && node --version
-RUN echo "NPM Version:" && npm --version
+RUN echo "NODE Version: $(node --version)"
+RUN echo "NPM Version: $(npm --version)"
 
 
-
-ARG CMS_GIT_TAG
-ARG API_GIT_TAG
+#COPY src/* .
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
-RUN cd /home && \
-	if [ -z "$API_GIT_TAG" ] ; then API_GIT_TAG="$CMS_GIT_TAG" ; fi && \
-	if [ -z "$API_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms-api ; else git clone https://github.com/pb-it/wing-cms-api -b "$API_GIT_TAG" --depth 1 ; fi && \
-	cd /home/wing-cms-api && \
-	npm install --legacy-peer-deps
-
-RUN mkdir /home/wing-cms-api/config/sslcert && cd /home/wing-cms-api/config/sslcert && \
-    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-    -keyout key.pem -out cert.pem -subj "/CN=example.com" \
-    -addext "subjectAltName=DNS:example.com,DNS:www.example.net,IP:10.0.0.1"
+RUN if [ ! -d "wing-cms-api" ] ; then bash scripts/setup_api.sh ; fi
+COPY config/api-server-config.js wing-cms-api/config/server-config.js
+COPY config/database-config-localhost.js wing-cms-api/config/database-config-localhost.js
+COPY config/database-config-localhost.js wing-cms-api/config/database-config.js
+COPY config/database-config-docker.js wing-cms-api/config/database-config-docker.js
+COPY config/cdn-config.js wing-cms-api/config/cdn-config.js
+RUN if [ ! -d "wing-cms-api/config/sslcert" ] ; then ln -s /home/sslcert wing-cms-api/config/sslcert ; fi
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
-RUN cd /home && \
-	if [ -z "$CMS_GIT_TAG" ] ; then git clone https://github.com/pb-it/wing-cms ; else git clone https://github.com/pb-it/wing-cms -b "$CMS_GIT_TAG" --depth 1 ; fi && \
-	cd /home/wing-cms && \
-	npm install
-
-RUN mkdir /var/www/html/cdn #ln -s /var/www/html/cdn /home/cdn
+RUN if [ ! -d "wing-cms" ] ; then bash scripts/setup_cms.sh ; fi
+COPY config/cms-server-config.js wing-cms/config/server-config.js
 
 
+RUN mkdir /var/www/html/cdn
+RUN mv /etc/nginx/sites-available/default /etc/nginx/sites-available/_default
+COPY nginx/default /etc/nginx/sites-available/default
 
-WORKDIR /home
 
-ADD start.sh ./start.sh
-RUN dos2unix start.sh && chmod +x start.sh
+EXPOSE 20-22 80 443 3002 3306 4000
 
-EXPOSE 20-22 80 3002 3306 4000
-
-CMD bash /home/start.sh && tail -f /dev/null
+CMD bash /home/scripts/start.sh && tail -f /dev/null
 #ENTRYPOINT tail -f /dev/null
