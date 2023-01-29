@@ -9,7 +9,8 @@ if [ -f "/etc/init.d/vsftpd" ] ; then /etc/init.d/vsftpd start ; fi
 
 if [ "$OS" = "win" ]
 then
-	cp config/server-config-docker.js config/server-config.js
+	cd /home/wing-cms-api
+	cp config/database-config-docker.js config/database-config.js
 fi
 
 echo $TEST

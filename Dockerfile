@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
 ARG BUILD_ENV="production"
 ARG CMS_GIT_TAG

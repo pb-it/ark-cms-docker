@@ -82,16 +82,6 @@ docker run --name <container-name> \
 ```
 
 
-### Windows
-
-```bash
-docker run --name <container-name> \
-	--env OS=win \
-	-p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
-	-d <image-name-or-id>
-```
-
-
 ### Troubleshooting
 
 `Error: getaddrinfo ENOTFOUND host.docker.internal`
