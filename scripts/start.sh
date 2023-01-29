@@ -24,4 +24,5 @@ then
 fi
 
 node /home/wing-cms-api/server.js &
+#node --max-old-space-size=8192 /home/wing-cms-api/server.js &
 node /home/wing-cms/server.js &
