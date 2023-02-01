@@ -4,7 +4,13 @@
 
 service ssh start
 if [ -f "/etc/init.d/vsftpd" ] ; then /etc/init.d/vsftpd start ; fi
+
 /etc/init.d/mysql start
+
+if [ "$PROXY" = true ] ; then
+	rm /etc/nginx/sites-enabled/default
+	ln -s /etc/nginx/sites-available/proxy /etc/nginx/sites-enabled/default ;
+fi
 /etc/init.d/nginx start
 
 if [ "$OS" = "win" ]
@@ -24,6 +30,6 @@ then
 	npm run test
 fi
 
-node /home/wing-cms-api/server.js &
+NODE_ENV=production node /home/wing-cms-api/server.js &
 #node --max-old-space-size=8192 /home/wing-cms-api/server.js &
-node /home/wing-cms/server.js &
+NODE_ENV=production node /home/wing-cms/server.js &

@@ -26,12 +26,10 @@ RUN if [ "$BUILD_ENV" = "development" ] ; then \
 	fi
 
 WORKDIR /home
-COPY sslcert sslcert
-RUN rm -f sslcert/.gitignore && \
-	if [ -z "$(ls -A sslcert)" ] ; then \
-    	openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-    	-keyout sslcert/key.pem -out sslcert/cert.pem -subj "/CN=example.com" \
-    	-addext "subjectAltName=DNS:example.com,DNS:www.example.net,IP:10.0.0.1" ; \
+COPY ssl ssl
+RUN rm -f ssl/.gitignore && \
+	if [ -z "$(ls -A ssl)" ] ; then \
+    	openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -subj '/CN=localhost' -nodes ; \
 	fi
 
 COPY scripts scripts
@@ -66,7 +64,7 @@ COPY config/database-config-localhost.js wing-cms-api/config/database-config-loc
 COPY config/database-config-localhost.js wing-cms-api/config/database-config.js
 COPY config/database-config-docker.js wing-cms-api/config/database-config-docker.js
 COPY config/cdn-config.js wing-cms-api/config/cdn-config.js
-RUN if [ ! -d "wing-cms-api/config/sslcert" ] ; then ln -s /home/sslcert wing-cms-api/config/sslcert ; fi
+RUN rm -r wing-cms-api/config/ssl && ln -s /home/ssl wing-cms-api/config/ssl
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
@@ -76,7 +74,7 @@ COPY config/cms-server-config.js wing-cms/config/server-config.js
 
 RUN mkdir /var/www/html/cdn
 RUN mv /etc/nginx/sites-available/default /etc/nginx/sites-available/_default
-COPY nginx/default /etc/nginx/sites-available/default
+COPY nginx/* /etc/nginx/sites-available/
 
 
 EXPOSE 20-22 80 443 3002 3306 4000
