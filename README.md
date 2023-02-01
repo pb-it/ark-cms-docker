@@ -14,12 +14,15 @@ docker build . -t <image-name> --progress=plain
 # '--build-arg NODE_VERSION=<version>' - '18'(default), '16' , ...
 ```
 
+
 ### Specific version (build script compatible with git tags >= 0.1.1-beta)
+
 
 ```bash
 docker build . -t <image-name> --progress=plain --build-arg CMS_GIT_TAG=<tag>
 # also append '--build-arg API_GIT_TAG=<tag>' if versions don't match
 ```
+
 
 ### Development build
 
@@ -32,7 +35,7 @@ Add `--build-arg BUILD_ENV=development` to install additionial programs
 docker pull patrickbauerit/wing-cms-mysql:<tag>
 ```
 See [https://hub.docker.com/r/patrickbauerit/wing-cms-mysql](https://hub.docker.com/r/patrickbauerit/wing-cms-mysql) for available tags
-	
+
 
 ## Run
 
@@ -60,19 +63,28 @@ docker run --name <container-name> \
 	-d <image-name-or-id>
 ```
 
-### Proxy
 
-Add `--env PROXY=true` to map all routes to port 80
+### Debug
 
+Run interactive:
+```bash
+docker run --name <container-name> \
+	-p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
+	-it <image-name-or-id> /bin/bash
+```
 
-### Test
-
+or connect to bash or running container
 ```bash
 docker run --name <container-name> \
 	--env TEST=true \
 	-p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
 	-d <image-name-or-id>
 ```
+
+
+### Proxy
+
+Add `--env PROXY=true` to map all routes to port 80
 
 
 ### Test
