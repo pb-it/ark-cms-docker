@@ -5,6 +5,7 @@ All-In-One solution with mysql database, server(backend API) and client(browser)
 > ⚠️**WARNING**⚠️
 >
 > The generated images are for testing purposes only and should not be used in productive way or in public domains!
+> This still applies when the image is build with `--build-arg BUILD_ENV=production` and started with `--env ENV=production`!
 
 
 ## Build
@@ -64,6 +65,19 @@ docker run --name <container-name> \
 ```
 
 
+#### Options
+
+
+#### Environment
+
+Add `--env ENV=production` to set `NODE_ENV`
+
+
+#### Proxy
+
+Add `--env PROXY=true` to map all routes to port 80
+
+
 ### Debug
 
 Run interactive:
@@ -80,11 +94,6 @@ docker run --name <container-name> \
 	-p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 \
 	-d <image-name-or-id>
 ```
-
-
-### Proxy
-
-Add `--env PROXY=true` to map all routes to port 80
 
 
 ### Test
