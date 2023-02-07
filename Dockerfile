@@ -77,6 +77,10 @@ RUN mv /etc/nginx/sites-available/default /etc/nginx/sites-available/_default
 COPY nginx/* /etc/nginx/sites-available/
 
 
+COPY pm2/ecosystem.config.js .
+RUN npm install pm2 -g
+
+
 EXPOSE 20-22 80 443 3002 3306 4000
 
 CMD bash /home/scripts/start.sh && tail -f /dev/null

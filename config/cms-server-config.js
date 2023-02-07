@@ -1,6 +1,6 @@
 var server = {
     port: 4000,
-    processManager: null
+    processManager: 'pm2'
 };
 
 module.exports = server;

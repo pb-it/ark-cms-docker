@@ -1,7 +1,7 @@
 var server = {
     port: 3002,
     ssl: true,
-    processManager: null
+    processManager: 'pm2'
 };
 
 module.exports = server;

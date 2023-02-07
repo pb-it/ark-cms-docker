@@ -32,10 +32,12 @@ fi
 
 if [ -z "$ENV" ] #default environment is development
 then
-	node /home/wing-cms-api/server.js &
-	#node --max-old-space-size=8192 /home/wing-cms-api/server.js &
-	node /home/wing-cms/server.js &
-else 
-	NODE_ENV=$ENV node /home/wing-cms-api/server.js &
-	NODE_ENV=$ENV node /home/wing-cms/server.js &
+	pm2 start ecosystem.config.js
+	#node /home/wing-cms-api/server.js &
+	##node --max-old-space-size=8192 /home/wing-cms-api/server.js &
+	#node /home/wing-cms/server.js &
+else
+	pm2 start ecosystem.config.js --env $ENV
+	#NODE_ENV=$ENV node /home/wing-cms-api/server.js &
+	#NODE_ENV=$ENV node /home/wing-cms/server.js &
 fi
