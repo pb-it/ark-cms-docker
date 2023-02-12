@@ -1,5 +1,9 @@
 FROM ubuntu:latest
 
+LABEL authors="Patrick Bauer <admin@pb-it.at>"
+LABEL title="wing-cms-mysql"
+LABEL description="CMS with headless API backend using mysql database"
+
 ARG BUILD_ENV="production"
 ARG CMS_GIT_TAG
 ARG API_GIT_TAG

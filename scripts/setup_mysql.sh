@@ -12,8 +12,21 @@ usermod -d /var/lib/mysql/ mysql
 
 sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
 
-service mysql start
 BASEDIR=$(dirname "$BASH_SOURCE")
-mysql -u root < "$BASEDIR"/setup.sql
+if [ -f "$BASEDIR"/setup.sql ] ; then
+	file="$BASEDIR"/setup.sql
+else
+    file=`mktemp`
+	cat << EOF > $file
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+CREATE USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EOF
+fi
+
+service mysql start
+mysql -u root < $file
 mysql -u root --execute "CREATE SCHEMA cms"
 service mysql stop
