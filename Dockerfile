@@ -68,7 +68,9 @@ COPY config/database-config-localhost.js wing-cms-api/config/database-config-loc
 COPY config/database-config-localhost.js wing-cms-api/config/database-config.js
 COPY config/database-config-docker.js wing-cms-api/config/database-config-docker.js
 COPY config/cdn-config.js wing-cms-api/config/cdn-config.js
-RUN rm -r wing-cms-api/config/ssl && ln -s /home/ssl wing-cms-api/config/ssl
+RUN rm -rf wing-cms-api/config/ssl/* && \
+	ln -s /home/ssl/cert.pem wing-cms-api/config/ssl/cert.pem && \
+	ln -s /home/ssl/key.pem wing-cms-api/config/ssl/key.pem
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
