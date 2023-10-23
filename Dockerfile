@@ -81,7 +81,9 @@ COPY config/cms-server-config.js wing-cms/config/server-config.js
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/extensions/commits?per_page=1" latest_commit
 RUN if [ ! -d "extensions" ] ; then bash scripts/setup_extensions.sh ; fi
-RUN cp extensions/dist/* wing-cms-api/extensions/
+RUN cp extensions/dist/console@1.0.0.zip extensions/dist/formatter@1.0.0.zip \
+	extensions/dist/http-proxy@1.0.0.zip extensions/dist/mime-text@1.0.0.zip \
+	extensions/dist/process@1.0.0.zip wing-cms-api/extensions/
 
 
 RUN mkdir /var/www/html/cdn
