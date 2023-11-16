@@ -41,6 +41,7 @@ COPY scripts scripts
 RUN dos2unix scripts/setup_mysql.sh && chmod +x scripts/setup_mysql.sh
 RUN dos2unix scripts/setup_api.sh && chmod +x scripts/setup_api.sh
 RUN dos2unix scripts/setup_cms.sh && chmod +x scripts/setup_cms.sh
+RUN dos2unix scripts/setup_extensions.sh && chmod +x scripts/setup_extensions.sh
 RUN dos2unix scripts/start.sh && chmod +x scripts/start.sh
 
 
@@ -59,7 +60,9 @@ RUN echo "NODE Version: $(node --version)"
 RUN echo "NPM Version: $(npm --version)"
 
 
-#COPY src/* .
+#COPY src/* . # does not work
+#COPY src/wing-cms-api wing-cms-api
+#COPY src/wing-cms wing-cms
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
@@ -81,9 +84,7 @@ COPY config/cms-server-config.js wing-cms/config/server-config.js
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/extensions/commits?per_page=1" latest_commit
 RUN if [ ! -d "extensions" ] ; then bash scripts/setup_extensions.sh ; fi
-RUN cp extensions/dist/console@1.0.0.zip extensions/dist/formatter@1.0.0.zip \
-	extensions/dist/http-proxy@1.0.0.zip extensions/dist/mime-text@1.0.0.zip \
-	extensions/dist/process@1.0.0.zip wing-cms-api/extensions/
+RUN cp extensions/dist/mime-text@1.0.0.zip extensions/dist/process@1.0.0.zip wing-cms-api/extensions/
 
 
 RUN mkdir /var/www/html/cdn
