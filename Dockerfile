@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 LABEL authors="Patrick Bauer <admin@pb-it.at>"
-LABEL title="wing-cms-mysql"
+LABEL title="ark-cms-mysql"
 LABEL description="CMS with headless API backend using mysql database"
 
 ARG BUILD_ENV="production"
@@ -61,30 +61,30 @@ RUN echo "NPM Version: $(npm --version)"
 
 
 #COPY src/* . # does not work
-#COPY src/wing-cms-api wing-cms-api
-#COPY src/wing-cms wing-cms
+#COPY src/ark-cms-api ark-cms-api
+#COPY src/ark-cms ark-cms
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/wing-cms-api/commits?per_page=1" latest_commit
-RUN if [ ! -d "wing-cms-api" ] ; then bash scripts/setup_api.sh ; fi
-COPY config/api-server-config.js wing-cms-api/config/server-config.js
-COPY config/database-config-localhost.js wing-cms-api/config/database-config-localhost.js
-COPY config/database-config-localhost.js wing-cms-api/config/database-config.js
-COPY config/database-config-docker.js wing-cms-api/config/database-config-docker.js
-COPY config/cdn-config.js wing-cms-api/config/cdn-config.js
-RUN rm -rf wing-cms-api/config/ssl/* && \
-	ln -s /home/ssl/cert.pem wing-cms-api/config/ssl/cert.pem && \
-	ln -s /home/ssl/key.pem wing-cms-api/config/ssl/key.pem
+ADD "https://api.github.com/repos/pb-it/ark-cms-api/commits?per_page=1" latest_commit
+RUN if [ ! -d "ark-cms-api" ] ; then bash scripts/setup_api.sh ; fi
+COPY config/api-server-config.js ark-cms-api/config/server-config.js
+COPY config/database-config-localhost.js ark-cms-api/config/database-config-localhost.js
+COPY config/database-config-localhost.js ark-cms-api/config/database-config.js
+COPY config/database-config-docker.js ark-cms-api/config/database-config-docker.js
+COPY config/cdn-config.js ark-cms-api/config/cdn-config.js
+RUN rm -rf ark-cms-api/config/ssl/* && \
+	ln -s /home/ssl/cert.pem ark-cms-api/config/ssl/cert.pem && \
+	ln -s /home/ssl/key.pem ark-cms-api/config/ssl/key.pem
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/wing-cms/commits?per_page=1" latest_commit
-RUN if [ ! -d "wing-cms" ] ; then bash scripts/setup_cms.sh ; fi
-COPY config/cms-server-config.js wing-cms/config/server-config.js
+ADD "https://api.github.com/repos/pb-it/ark-cms/commits?per_page=1" latest_commit
+RUN if [ ! -d "ark-cms" ] ; then bash scripts/setup_cms.sh ; fi
+COPY config/cms-server-config.js ark-cms/config/server-config.js
 
 # break docker build cache on git update
 ADD "https://api.github.com/repos/pb-it/extensions/commits?per_page=1" latest_commit
 RUN if [ ! -d "extensions" ] ; then bash scripts/setup_extensions.sh ; fi
-RUN cp extensions/dist/mime-text@1.0.0.zip extensions/dist/process@1.0.0.zip wing-cms-api/extensions/
+RUN cp extensions/dist/mime-text@1.0.0.zip extensions/dist/process@1.0.0.zip ark-cms-api/extensions/
 
 
 RUN mkdir /var/www/html/cdn

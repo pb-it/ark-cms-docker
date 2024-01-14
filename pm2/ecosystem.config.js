@@ -1,8 +1,8 @@
 module.exports = {
     "apps": [
         {
-            "name": "wing-cms-api",
-            "script": "./wing-cms-api/index.js",
+            "name": "ark-cms-api",
+            "script": "./ark-cms-api/index.js",
             "node_args": "--max_old_space_size=4096",
             "min_uptime": "5000",
             "max_restarts": "5",
@@ -14,8 +14,8 @@ module.exports = {
             }
         },
         {
-            "name": "wing-cms",
-            "script": "./wing-cms/index.js",
+            "name": "ark-cms",
+            "script": "./ark-cms/index.js",
             "min_uptime": "5000",
             "max_restarts": "5",
             "env": {

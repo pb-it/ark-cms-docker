@@ -15,14 +15,14 @@ fi
 
 if [ "$OS" = "win" ]
 then
-	cd /home/wing-cms-api
+	cd /home/ark-cms-api
 	cp config/database-config-docker.js config/database-config.js
 fi
 
 echo $TEST
 if [ "$TEST" = true ]
 then
-	cd /home/wing-cms-api
+	cd /home/ark-cms-api
 	cp config/database-config-template-docker.js tests/config/database-config.js
 	cp config/server-config-template.js tests/config/server-config.js
 	cp config/cdn-config-template.js tests/config/cdn-config.js
@@ -33,11 +33,11 @@ fi
 if [ -z "$ENV" ] #default environment is development
 then
 	pm2 start ecosystem.config.js
-	#node /home/wing-cms-api/server.js &
-	##node --max-old-space-size=8192 /home/wing-cms-api/server.js &
-	#node /home/wing-cms/server.js &
+	#node /home/ark-cms-api/server.js &
+	##node --max-old-space-size=8192 /home/ark-cms-api/server.js &
+	#node /home/ark-cms/server.js &
 else
 	pm2 start ecosystem.config.js --env $ENV
-	#NODE_ENV=$ENV node /home/wing-cms-api/server.js &
-	#NODE_ENV=$ENV node /home/wing-cms/server.js &
+	#NODE_ENV=$ENV node /home/ark-cms-api/server.js &
+	#NODE_ENV=$ENV node /home/ark-cms/server.js &
 fi

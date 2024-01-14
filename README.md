@@ -1,4 +1,4 @@
-# wing-cms-mysql
+# ark-cms-mysql
 
 All-In-One solution with mysql database, server(backend API) and client(browser) application.
 
@@ -33,9 +33,9 @@ Add `--build-arg BUILD_ENV=development` to install additionial programs
 ### As an alternative prebuild images can be pulled from Docker Hub
 
 ```bash
-docker pull patrickbauerit/wing-cms-mysql:<tag>
+docker pull patrickbauerit/ark-cms-mysql:<tag>
 ```
-See [https://hub.docker.com/r/patrickbauerit/wing-cms-mysql](https://hub.docker.com/r/patrickbauerit/wing-cms-mysql) for available tags
+See [https://hub.docker.com/r/patrickbauerit/ark-cms-mysql](https://hub.docker.com/r/patrickbauerit/ark-cms-mysql) for available tags
 
 
 ## Run
