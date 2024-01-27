@@ -50,7 +50,7 @@ RUN scripts/setup_mysql.sh
 
 ARG NODE_VERSION
 RUN if [ -z "$NODE_VERSION" ] ; then \
-		curl -fsSL https://deb.nodesource.com/setup_18.x | bash - ; \
+		curl -fsSL https://deb.nodesource.com/setup_20.x | bash - ; \
 	else \
 		curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - ; \
 	fi
@@ -71,7 +71,6 @@ COPY config/api-server-config.js ark-cms-api/config/server-config.js
 COPY config/database-config-localhost.js ark-cms-api/config/database-config-localhost.js
 COPY config/database-config-localhost.js ark-cms-api/config/database-config.js
 COPY config/database-config-docker.js ark-cms-api/config/database-config-docker.js
-COPY config/cdn-config.js ark-cms-api/config/cdn-config.js
 RUN rm -rf ark-cms-api/config/ssl/* && \
 	ln -s /home/ssl/cert.pem ark-cms-api/config/ssl/cert.pem && \
 	ln -s /home/ssl/key.pem ark-cms-api/config/ssl/key.pem
@@ -82,9 +81,9 @@ RUN if [ ! -d "ark-cms" ] ; then bash scripts/setup_cms.sh ; fi
 COPY config/cms-server-config.js ark-cms/config/server-config.js
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/extensions/commits?per_page=1" latest_commit
-RUN if [ ! -d "extensions" ] ; then bash scripts/setup_extensions.sh ; fi
-RUN cp extensions/dist/mime-text@1.0.0.zip extensions/dist/process@1.0.0.zip ark-cms-api/extensions/
+ADD "https://api.github.com/repos/pb-it/ark-cms-extensions/commits?per_page=1" latest_commit
+RUN if [ ! -d "ark-cms-extensions" ] ; then bash scripts/setup_extensions.sh ; fi
+RUN cp ark-cms-extensions/dist/mime-text@1.0.0.zip ark-cms-extensions/dist/process@1.0.0.zip ark-cms-api/extensions/
 
 
 RUN mkdir /var/www/html/cdn

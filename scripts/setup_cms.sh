@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -z "$CMS_GIT_TAG" ] ; then
     buildStep=true
     git clone https://github.com/pb-it/ark-cms

@@ -11,10 +11,10 @@ server {
   proxy_read_timeout          600;
   send_timeout                600;
 
-  location /cdn {
-    alias /var/www/html/cdn/;
-    autoindex on;
-  }
+  #location /cdn {
+  #  alias /var/www/html/cdn/;
+  #  autoindex on;
+  #}
 
   location /sys/ {
     proxy_pass https://localhost:3002/sys/;

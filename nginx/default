@@ -5,8 +5,8 @@ server {
 
   #access_log /var/log/nginx/access.log combined;
 
-  location /cdn {
-    alias /var/www/html/cdn/;
-    autoindex on;
-  }
+  #location /cdn {
+  #  alias /var/www/html/cdn/;
+  #  autoindex on;
+  #}
 }
