@@ -1,8 +1,14 @@
 #!/bin/bash
 
+if [ -z "$CMS_GIT_SRC" ] ; then
+    repo=https://github.com/pb-it/ark-cms
+else
+    repo=$CMS_GIT_SRC
+fi
+
 if [ -z "$CMS_GIT_TAG" ] ; then
     buildStep=true
-    git clone https://github.com/pb-it/ark-cms
+    git clone "$repo"
 else
     #semver=( ${CMS_GIT_TAG//./ } )
     SEMVER_REGEX="^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
@@ -16,7 +22,7 @@ else
             buildStep=true
         fi
     fi
-    git clone https://github.com/pb-it/ark-cms -b "$CMS_GIT_TAG" --depth 1
+    git clone "$repo" -b "$CMS_GIT_TAG" --depth 1
 fi
 cd ark-cms
 npm install

@@ -65,7 +65,9 @@ RUN echo "NPM Version: $(npm --version)"
 #COPY src/ark-cms ark-cms
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/ark-cms-api/commits?per_page=1" latest_commit
+ARG API_GIT_API=https://api.github.com/repos/pb-it/ark-cms-api/commits?per_page=1
+ADD $API_GIT_API latest_commit
+ARG API_GIT_SRC
 RUN if [ ! -d "ark-cms-api" ] ; then bash scripts/setup_api.sh ; fi
 COPY config/api-server-config.js ark-cms-api/config/server-config.js
 COPY config/database-config-localhost.js ark-cms-api/config/database-config-localhost.js
@@ -76,12 +78,16 @@ RUN rm -rf ark-cms-api/config/ssl/* && \
 	ln -s /home/ssl/key.pem ark-cms-api/config/ssl/key.pem
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/ark-cms/commits?per_page=1" latest_commit
+ARG CMS_GIT_API=https://api.github.com/repos/pb-it/ark-cms/commits?per_page=1
+ADD $CMS_GIT_API latest_commit
+ARG CMS_GIT_SRC
 RUN if [ ! -d "ark-cms" ] ; then bash scripts/setup_cms.sh ; fi
 COPY config/cms-server-config.js ark-cms/config/server-config.js
 
 # break docker build cache on git update
-ADD "https://api.github.com/repos/pb-it/ark-cms-extensions/commits?per_page=1" latest_commit
+ARG EXT_GIT_API=https://api.github.com/repos/pb-it/ark-cms-extensions/commits?per_page=1
+ADD $EXT_GIT_API latest_commit
+ARG EXT_GIT_SRC
 RUN if [ ! -d "ark-cms-extensions" ] ; then bash scripts/setup_extensions.sh ; fi
 RUN cp ark-cms-extensions/dist/mime-text@1.0.0.zip ark-cms-extensions/dist/process@1.0.0.zip ark-cms-api/extensions/
 

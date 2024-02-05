@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -z "$EXT_GIT_SRC" ] ; then
+    repo=https://github.com/pb-it/ark-cms-extensions
+else
+    repo=$EXT_GIT_SRC
+fi
+
 if [ -z "$CMS_GIT_TAG" ] ; then
     buildExtensions=true
 else
@@ -18,7 +24,7 @@ else
 fi
 
 if [ "$buildExtensions" = true ] ; then
-    git clone https://github.com/pb-it/ark-cms-extensions
+    git clone "$repo"
     cd ark-cms-extensions
     ./build.sh >/dev/null
 fi
