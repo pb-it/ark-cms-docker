@@ -89,7 +89,7 @@ ARG EXT_GIT_API=https://api.github.com/repos/pb-it/ark-cms-extensions/commits?pe
 ADD $EXT_GIT_API latest_commit
 ARG EXT_GIT_SRC
 RUN if [ ! -d "ark-cms-extensions" ] ; then bash scripts/setup_extensions.sh ; fi
-RUN cp ark-cms-extensions/dist/mime-text@1.0.0.zip ark-cms-extensions/dist/process@1.0.0.zip ark-cms-api/extensions/
+RUN cp ark-cms-extensions/dist/mime-text.zip ark-cms-extensions/dist/http-proxy.zip ark-cms-extensions/dist/process.zip ark-cms-api/extensions/
 
 
 RUN mkdir /var/www/html/cdn

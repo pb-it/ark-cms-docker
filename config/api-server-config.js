@@ -1,6 +1,7 @@
 var server = {
     port: 3002,
     ssl: true,
+    appDataDir: '~/.local/share/ark-cms',
     fileStorage: [{
         name: "localhost",
         url: "/cdn",
