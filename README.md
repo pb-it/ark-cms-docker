@@ -35,7 +35,7 @@ Add `--build-arg BUILD_ENV=development` to install additionial programs
 ```bash
 docker pull patrickbauerit/ark-cms-mysql:<tag>
 ```
-See [https://hub.docker.com/r/patrickbauerit/ark-cms-mysql](https://hub.docker.com/r/patrickbauerit/ark-cms-mysql) for available tags
+See [https://hub.docker.com/r/patrickbauerit/ark-cms-mysql/tags](https://hub.docker.com/r/patrickbauerit/ark-cms-mysql/tags) for available tags
 
 
 ## Run
@@ -43,6 +43,12 @@ See [https://hub.docker.com/r/patrickbauerit/ark-cms-mysql](https://hub.docker.c
 ```bash
 docker run -p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 -d <image-name-or-id>
 ```
+
+For example, if latest prebuild should be used:
+```bash
+docker run -p 20-22:20-22 -p 80:80 -p 443:443 -p 3002:3002 -p 3306:3306 -p 4000:4000 -d patrickbauerit/ark-cms-mysql
+```
+
 
 You can persist the database in a seperate mount like this:
 

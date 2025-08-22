@@ -11,6 +11,7 @@ apt-get install -y mysql-server
 usermod -d /var/lib/mysql/ mysql
 
 sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+# sort_buffer_size=5M
 
 BASEDIR=$(dirname "$BASH_SOURCE")
 if [ -f "$BASEDIR"/setup.sql ] ; then
