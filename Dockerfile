@@ -50,7 +50,7 @@ RUN scripts/setup_mysql.sh
 
 ARG NODE_VERSION
 RUN if [ -z "$NODE_VERSION" ] ; then \
-		curl -fsSL https://deb.nodesource.com/setup_20.x | bash - ; \
+		curl -fsSL https://deb.nodesource.com/setup_24.x | bash - ; \
 	else \
 		curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - ; \
 	fi
